@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ALL YOUR CSS STYLES - keep them exactly as in your original file */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        h1 i {
+            font-size: 2.2rem;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            font-size: 1rem;
+            padding-left: 45px;
+        }
+        .search-box i {
+            position: absolute;
+            margin-left: 15px;
+            color: #777;
+        }
+        .filters {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        select, button {
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            background-color: white;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .btn-add {
+            background-color: #2ecc71;
+        }
+        .btn-logout {
+            background-color: red;
+        }
+        .btn-add:hover {
+            background-color: #27ae60;
+        }
+        .employee-count {
+            color: #666;
+            font-weight: 500;
+        }
+        .employee-list {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background-color: #f8f9fa;
+        }
+        th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover {
+            background-color: #f1f3f5;
+        }
+        th i {
+            margin-left: 8px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        td {
+            padding: 18px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .employee-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .name {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        .email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .department {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .dept-sales {
+            background-color: #ffeaa7;
+            color: #e17055;
+        }
+        .dept-it {
+            background-color: #a29bfe;
+            color: #2d3436;
+        }
+        .dept-hr {
+            background-color: #fd79a8;
+            color: #2d3436;
+        }
+        .dept-marketing {
+            background-color: #74b9ff;
+            color: #2d3436;
+        }
+        .dept-finance {
+            background-color: #55efc4;
+            color: #2d3436;
+        }
+        .status {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .edit-btn {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        .delete-btn {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+        .view-btn {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+        .employee-details {
+            display: none;
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-top: 1px solid #eee;
+        }
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .details-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .detail-value {
+            font-size: 1.05rem;
+        }
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+        }
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        .pagination {
+            display: flex;
+            list-style: none;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .pagination li a {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #3498db;
+            border-radius: 4px;
+        }
+        .pagination li.active a {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .pagination li.disabled a {
+            color: #ccc;
+            pointer-events: none;
+        }
+        footer {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-box {
+                max-width: 100%;
+            }
+            th, td {
+                padding: 12px 8px;
+            }
+            .actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .employee-info {
+                flex-direction: column;
+                gap: 5px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1><i class="fas fa-users"></i> Employee Directory</h1>
+        <p class="subtitle">Manage and view all company employees in one place</p>
+    </header>
+
+    <form th:action="@{/}" method="get" id="filterForm">
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" th:value="${search}"
+                       placeholder="Search..." onchange="this.form.submit()">
+            </div>
+
+            <div class="filters">
+                <select name="dept" onchange="this.form.submit()">
+                    <option value="">All Departments</option>
+                    <option value="Sales" th:selected="${selectedDept == 'Sales'}">Sales</option>
+                    <option value="IT" th:selected="${selectedDept == 'IT'}">IT</option>
+                    <option value="HR" th:selected="${selectedDept == 'HR'}">HR</option>
+                    <option value="MARKETING" th:selected="${selectedDept == 'MARKETING'}">Marketing</option>
+                </select>
+
+                <select name="status" onchange="this.form.submit()">
+                    <option value="">All Status</option>
+                    <option value="Active" th:selected="${selectedStatus == 'Active'}">Active</option>
+                    <option value="Inactive" th:selected="${selectedStatus == 'Inactive'}">Inactive</option>
+                </select>
+            </div>
+        </div>
+    </form>
+    <div class="controls">
+        <div class="employee-count">
+            Showing <span id="employeeCount" th:text="${#lists.size(employees)}"></span> employees
+        </div>
+        <button class="btn-add" id="addEmployeeBtn" onclick="window.location.href='/admin/create'" sec:authorize="hasAnyRole('ADMIN', 'HR')">
+            <i class="fas fa-user-plus"></i> Add Employee
+        </button>
+    </div>
+
+    <div class="employee-list">
+        <table>
+            <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Status</th>
+                <th>Join Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="employeeTableBody">
+            <tr th:each="employee : ${employees}" th:data-id="${employee.id}">
+                <td>
+                    <div class="employee-info">
+                        <div class="avatar" th:style="'background-color: ' + ${#strings.substring(T(com.example.employeeManagement.Controller.EmployeeController).getAvatarColor(employee.id), 0, 7)}">
+                            <span th:text="${#strings.substring(employee.fullName, 0, 1)} + ${#strings.substring(employee.fullName, #strings.indexOf(employee.fullName, ' ') + 1, #strings.indexOf(employee.fullName, ' ') + 2)}">JD</span>
+                        </div>
+                        <div>
+                            <div class="name" th:text="${employee.fullName}">John Doe</div>
+                            <div class="email" th:text="${employee.user?.email}">john.doe@company.com</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+            <span class="department"
+                  th:classappend="'dept-' + ${#strings.toLowerCase(#strings.replace(employee.department, ' ', '-'))}"
+                  th:text="${employee.department}">Sales</span>
+                </td>
+                <td th:text="${employee.position}">Sales Manager</td>
+                <td>
+            <span class="status"
+                  th:classappend="'status-' + ${#strings.toLowerCase(employee.status)}"
+                  th:text="${employee.status}">Active</span>
+                </td>
+                <td th:text="${#temporals.format(employee.hireDate, 'MMM dd, yyyy')}">Jan 15, 2023</td>
+                <td>
+                    <div class="actions">
+                        <a th:href="@{/profile/{id}(id=${employee.id})}" class="action-btn view-btn" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a th:href="@{/admin/{id}/edit(id=${employee.id})}" class="action-btn edit-btn" title="Edit Employee" sec:authorize="hasRole('ADMIN')">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form th:action="@{/admin/{id}/delete(id=${employee.id})}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                            <button type="submit" class="action-btn delete-btn" title="Delete Employee" style="border: none; background: none; cursor: pointer;" sec:authorize="hasRole('ADMIN')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Show if no employees -->
+            <tr th:if="${#lists.isEmpty(employees)}">
+                <td colspan="6">
+                    <div class="no-results">
+                        <i class="fas fa-user-slash"></i>
+                        <h3>No employees found</h3>
+                        <p>Try adding some employees first.</p>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination-container" th:if="${totalPages > 0}">
+            <ul class="pagination">
+                <li th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a th:href="@{/(page=${currentPage - 1}, search=${search}, dept=${selectedDept}, status=${selectedStatus})}">Previous</a>
+                </li>
+
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${currentPage == i} ? 'active'">
+                    <a th:href="@{/(page=${i}, search=${search}, dept=${selectedDept}, status=${selectedStatus})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+
+                <li th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a th:href="@{/(page=${currentPage + 1}, search=${search}, dept=${selectedDept}, status=${selectedStatus})}">Next</a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            <i class="fas fa-user-slash"></i>
+            <h3>No employees found</h3>
+            <p>Try adjusting your search or filter to find what you're looking for.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>Employee Directory &copy; 2023 | Total Employees: <span id="totalEmployees" th:text="${#lists.size(employees)}">0</span></p>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </form>
+    </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - Task Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .signup-container {
+        width: 100%;
+        max-width: 500px;
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .signup-container:hover {
+        transform: translateY(-5px);
+    }
+
+    .signup-header {
+        background: linear-gradient(to right, #667eea, #764ba2);
+        color: white;
+        padding: 35px 30px;
+        text-align: center;
+    }
+
+    .signup-header h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .signup-header p {
+        opacity: 0.9;
+        font-size: 16px;
+    }
+
+    .signup-form {
+        padding: 35px 30px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+        font-size: 15px;
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-with-icon i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+        font-size: 18px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px 15px 15px 50px;
+        border: 2px solid #e1e5ee;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #777;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    .password-toggle:hover {
+        color: #333;
+    }
+
+    .error-message {
+        color: #d32f2f;
+        font-size: 14px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .error-message i {
+        margin-right: 8px;
+        font-size: 16px;
+    }
+
+    .error-alert {
+        background-color: #ffeaea;
+        color: #d32f2f;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        border-left: 5px solid #d32f2f;
+        display: flex;
+        align-items: center;
+        animation: fadeIn 0.5s;
+    }
+
+    .error-alert i {
+        margin-right: 12px;
+        font-size: 20px;
+    }
+
+    .success-alert {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        border-left: 5px solid #2e7d32;
+        display: flex;
+        align-items: center;
+        animation: fadeIn 0.5s;
+    }
+
+    .success-alert i {
+        margin-right: 12px;
+        font-size: 20px;
+    }
+
+    .signup-btn {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(to right, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    .signup-btn:hover {
+        background: linear-gradient(to right, #5a6fd8, #6a4190);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .signup-btn:active {
+        transform: translateY(2px);
+    }
+
+    .signup-btn:disabled {
+        background: #cccccc;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .password-requirements {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 10px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .password-requirements h4 {
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 15px;
+    }
+
+    .password-requirements ul {
+        list-style: none;
+        padding-left: 5px;
+    }
+
+    .password-requirements li {
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+    }
+
+    .password-requirements li i {
+        margin-right: 8px;
+        font-size: 12px;
+    }
+
+    .requirement-met {
+        color: #2e7d32;
+    }
+
+    .requirement-not-met {
+        color: #d32f2f;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 25px 0;
+        color: #888;
+    }
+
+    .divider::before, .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-color: #ddd;
+    }
+
+    .divider span {
+        padding: 0 15px;
+        font-size: 14px;
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 25px;
+        color: #555;
+        font-size: 16px;
+    }
+
+    .login-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .login-link a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    .shake {
+        animation: shake 0.3s ease;
+    }
+
+    @media (max-width: 480px) {
+        .signup-container {
+            border-radius: 15px;
+        }
+
+        .signup-header {
+            padding: 25px 20px;
+        }
+
+        .signup-form {
+            padding: 25px 20px;
+        }
+
+        .signup-header h1 {
+            font-size: 28px;
+        }
+    }
+
+    .terms {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+    }
+
+    .terms a {
+        color: #667eea;
+        text-decoration: none;
+    }
+
+    .terms a:hover {
+        text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="signup-container">
+  <div class="signup-header">
+    <h1>Create Account</h1>
+    <p>Join our task management platform today</p>
+  </div>
+
+  <div class="signup-form">
+    <!-- Error Alert for General Errors -->
+    <div th:if="${error}" class="error-alert">
+      <i class="fas fa-exclamation-circle"></i>
+      <div>
+        <strong>Registration Error</strong><br>
+        <span th:text="${error}"></span>
+      </div>
+    </div>
+
+    <!-- Success Alert for Successful Registration -->
+    <div th:if="${success}" class="success-alert">
+      <i class="fas fa-check-circle"></i>
+      <div>
+        <strong>Registration Successful!</strong><br>
+        <span th:text="${success}"></span>
+      </div>
+    </div>
+
+    <form th:action="@{/signup}" th:object="${signUpRequest}" method="post" id="signupForm">
+      <!-- Name Field -->
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <div class="input-with-icon">
+          <i class="fas fa-user"></i>
+          <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="Enter your full name" required>
+        </div>
+        <p th:if="${#fields.hasErrors('name')}" class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <span th:errors="*{name}"></span>
+        </p>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-with-icon">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" th:field="*{email}" class="form-control" placeholder="Enter your email" required>
+        </div>
+        <p th:if="${#fields.hasErrors('email')}" class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <span th:errors="*{email}"></span>
+        </p>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-with-icon">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" th:field="*{password}" class="form-control" placeholder="Create a password" required>
+          <button type="button" class="password-toggle" id="togglePassword">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+
+        <!-- Password Requirements -->
+        <div class="password-requirements">
+          <h4>Password Requirements:</h4>
+          <ul>
+            <li id="req-length">
+              <i class="fas" id="length-icon"></i>
+              At least 8 characters
+            </li>
+            <li id="req-uppercase">
+              <i class="fas" id="uppercase-icon"></i>
+              At least one uppercase letter
+            </li>
+            <li id="req-lowercase">
+              <i class="fas" id="lowercase-icon"></i>
+              At least one lowercase letter
+            </li>
+            <li id="req-number">
+              <i class="fas" id="number-icon"></i>
+              At least one number
+            </li>
+          </ul>
+        </div>
+
+        <p th:if="${#fields.hasErrors('password')}" class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <span th:errors="*{password}"></span>
+        </p>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="input-with-icon">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required>
+          <button type="button" class="password-toggle" id="toggleConfirmPassword">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <p id="passwordMatchError" class="error-message" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i>
+          Passwords do not match
+        </p>
+      </div>
+
+      <button type="submit" class="signup-btn" id="submitBtn">
+        <i class="fas fa-user-plus" style="margin-right: 8px;"></i>
+        Create Account
+      </button>
+
+      <div class="divider">
+        <span>Already have an account?</span>
+      </div>
+
+      <div class="login-link">
+        Already have an account? <a th:href="@{/login}">Login here</a>
+      </div>
+
+      <div class="terms">
+        By creating an account, you agree to our
+        <a href="#">Terms of Service</a> and
+        <a href="#">Privacy Policy</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Toggle password visibility
+  document.getElementById('togglePassword').addEventListener('click', function() {
+      const passwordInput = document.getElementById('password');
+      const icon = this.querySelector('i');
+
+      if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+      } else {
+          passwordInput.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+      }
+  });
+
+  // Toggle confirm password visibility
+  document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const icon = this.querySelector('i');
+
+      if (confirmPasswordInput.type === 'password') {
+          confirmPasswordInput.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+      } else {
+          confirmPasswordInput.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+      }
+  });
+
+  // Password validation
+  const passwordInput = document.getElementById('password');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const passwordMatchError = document.getElementById('passwordMatchError');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // Password requirement elements
+  const lengthReq = document.getElementById('req-length');
+  const uppercaseReq = document.getElementById('req-uppercase');
+  const lowercaseReq = document.getElementById('req-lowercase');
+  const numberReq = document.getElementById('req-number');
+
+  const lengthIcon = document.getElementById('length-icon');
+  const uppercaseIcon = document.getElementById('uppercase-icon');
+  const lowercaseIcon = document.getElementById('lowercase-icon');
+  const numberIcon = document.getElementById('number-icon');
+
+  function validatePassword(password) {
+      const requirements = {
+          length: password.length >= 8,
+          uppercase: /[A-Z]/.test(password),
+          lowercase: /[a-z]/.test(password),
+          number: /[0-9]/.test(password)
+      };
+
+      // Update requirement indicators
+      updateRequirementIndicator(lengthReq, lengthIcon, requirements.length);
+      updateRequirementIndicator(uppercaseReq, uppercaseIcon, requirements.uppercase);
+      updateRequirementIndicator(lowercaseReq, lowercaseIcon, requirements.lowercase);
+      updateRequirementIndicator(numberReq, numberIcon, requirements.number);
+
+      return requirements.length && requirements.uppercase &&
+             requirements.lowercase && requirements.number;
+  }
+
+  function updateRequirementIndicator(element, icon, met) {
+      if (met) {
+          element.classList.add('requirement-met');
+          element.classList.remove('requirement-not-met');
+          icon.className = 'fas fa-check-circle';
+      } else {
+          element.classList.add('requirement-not-met');
+          element.classList.remove('requirement-met');
+          icon.className = 'fas fa-times-circle';
+      }
+  }
+
+  function checkPasswordMatch() {
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      if (confirmPassword === '') {
+          passwordMatchError.style.display = 'none';
+          return false;
+      }
+
+      if (password !== confirmPassword) {
+          passwordMatchError.style.display = 'flex';
+          confirmPasswordInput.classList.add('shake');
+          setTimeout(() => confirmPasswordInput.classList.remove('shake'), 300);
+          return false;
+      } else {
+          passwordMatchError.style.display = 'none';
+          return true;
+      }
+  }
+
+  function validateForm() {
+      const passwordValid = validatePassword(passwordInput.value);
+      const passwordsMatch = checkPasswordMatch();
+      const formValid = passwordValid && passwordsMatch;
+
+      submitBtn.disabled = !formValid;
+      return formValid;
+  }
+
+  // Event listeners for real-time validation
+  passwordInput.addEventListener('input', function() {
+      validatePassword(this.value);
+      checkPasswordMatch();
+      validateForm();
+  });
+
+  confirmPasswordInput.addEventListener('input', function() {
+      checkPasswordMatch();
+      validateForm();
+  });
+
+  // Initialize validation on page load
+  validatePassword('');
+
+  // Form submission validation
+  document.getElementById('signupForm').addEventListener('submit', function(event) {
+      if (!validateForm()) {
+          event.preventDefault();
+
+          // Show error message
+          if (!checkPasswordMatch()) {
+              passwordMatchError.style.display = 'flex';
+              confirmPasswordInput.focus();
+          }
+
+          // Highlight invalid fields
+          const password = passwordInput.value;
+          if (!validatePassword(password)) {
+              passwordInput.classList.add('shake');
+              setTimeout(() => passwordInput.classList.remove('shake'), 300);
+          }
+      }
+  });
+
+  // Add focus effects to form inputs
+  const formControls = document.querySelectorAll('.form-control');
+  formControls.forEach(control => {
+      control.addEventListener('focus', function() {
+          this.parentElement.parentElement.classList.add('focused');
+      });
+
+      control.addEventListener('blur', function() {
+          if (this.value === "") {
+              this.parentElement.parentElement.classList.remove('focused');
+          }
+      });
+  });
+</script>
+</body>
+</html>
