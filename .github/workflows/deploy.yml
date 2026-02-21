@@ -1,4 +1,4 @@
-name: Auto-Deploy Spring Boot
+name: Auto-Deploy Spring Boot with Docker
 
 on:
   push:
@@ -13,32 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build JAR with Maven
-        run: ./mvnw clean package -DskipTests
-
-      - name: Copy JAR to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: 163.245.207.8
-          username: root
-          key: ${{ secrets.VPS_PRIVATE_KEY }}
-          source: "target/employeeManagement-0.0.1-SNAPSHOT.jar"
-          target: "/root/employeeJava/Employee-Management/app.jar"
-
-      - name: Restart Spring Boot service
+      - name: Log in to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 163.245.207.8
-          username: root
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           script: |
             cd /root/employeeJava/Employee-Management
+            # Pull latest code
             git fetch origin
             git reset --hard origin/main
+            # Build & start containers
             docker compose up -d --build
