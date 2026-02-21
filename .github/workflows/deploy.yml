@@ -37,4 +37,8 @@ jobs:
           host: 163.245.207.8
           username: root
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          script: sudo systemctl restart employee
+          script: |
+            cd /root/employeeJava/Employee-Management
+            git fetch origin
+            git reset --hard origin/main
+            docker compose up -d --build

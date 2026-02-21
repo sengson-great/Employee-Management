@@ -6,6 +6,8 @@ services:
     environment:
       MYSQL_DATABASE: employee_db
       MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mysql-data:/var/lib/mysql
     ports:
       - "3307:3306" # You can still access it from your Mac via 3307
 
