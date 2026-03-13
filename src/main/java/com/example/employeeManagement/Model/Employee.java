@@ -13,7 +13,9 @@ public class Employee {
     @Column(unique = true)
     private String employeeCode;
     private String fullName;
-    private String department;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
     private String position;
     private LocalDate hireDate;
 
@@ -33,7 +35,7 @@ public class Employee {
         this.fullName = fullName;
     }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 
@@ -57,7 +59,7 @@ public class Employee {
         return fullName;
     }
 
-    public String getDepartment() {
+    public Department getDepartment() {
         return department;
     }
 

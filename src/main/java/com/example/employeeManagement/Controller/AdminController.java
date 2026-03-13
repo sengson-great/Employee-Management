@@ -5,6 +5,7 @@ import com.example.employeeManagement.DTO.SignUpRequest;
 import com.example.employeeManagement.DTO.UpdateEmployeeRequest;
 import com.example.employeeManagement.Model.Employee;
 import com.example.employeeManagement.Service.AuthService;
+import com.example.employeeManagement.Service.DepartmentService;
 import com.example.employeeManagement.Service.EmployeeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,16 +21,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+    private final EmployeeService employeeService;
+    private final DepartmentService departmentService;
 
-    @Autowired
-    private EmployeeService employeeService;
+    public AdminController(AuthService authService, EmployeeService employeeService, DepartmentService departmentService) {
+        this.authService = authService;
+        this.employeeService = employeeService;
+        this.departmentService = departmentService;
+    }
 
     // Show create employee form
     @GetMapping("/create")
     public String createEmployeeForm(@NotNull Model model) {
-        model.addAttribute("createEmployeeRequest", new CreateEmployeeRequest("","","","","","",""));
+        model.addAttribute("createEmployeeRequest", new CreateEmployeeRequest("","","","","",null,""));
+        model.addAttribute("departments", departmentService.getAllDepartments());
         return "create-employee";
     }
 
@@ -40,6 +46,7 @@ public class AdminController {
                                        Model model,
                                        RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
+            model.addAttribute("departments", departmentService.getAllDepartments());
             return "create-employee";
         }
         try {
@@ -48,6 +55,7 @@ public class AdminController {
             return "redirect:/";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
+            model.addAttribute("departments", departmentService.getAllDepartments());
             return "create-employee";
         }
     }
@@ -61,11 +69,13 @@ public class AdminController {
                 return "redirect:/?error=Employee+not+found";
             }
 
+            Long deptId = employee.getDepartment() != null ? employee.getDepartment().getId() : null;
+
             // Convert Employee to UpdateEmployeeRequest
             UpdateEmployeeRequest request = new UpdateEmployeeRequest(
                     employee.getEmployeeCode(),
                     employee.getFullName(),
-                    employee.getDepartment(),
+                    deptId,
                     employee.getPosition(),
                     employee.getHireDate(),
                     employee.getStatus()
@@ -73,6 +83,7 @@ public class AdminController {
 
             model.addAttribute("employeeId", id);
             model.addAttribute("updateEmployeeRequest", request);
+            model.addAttribute("departments", departmentService.getAllDepartments());
             return "edit-employee";
         } catch (Exception e) {
             return "redirect:/?error=" + e.getMessage();
@@ -93,7 +104,7 @@ public class AdminController {
         System.out.println("Form data received:");
         System.out.println("  - employeeCode: " + updateEmployeeRequest.employeeCode());
         System.out.println("  - fullName: " + updateEmployeeRequest.fullName());
-        System.out.println("  - department: " + updateEmployeeRequest.department());
+        System.out.println("  - departmentId: " + updateEmployeeRequest.departmentId());
         System.out.println("  - position: " + updateEmployeeRequest.position());
         System.out.println("  - hireDate: " + updateEmployeeRequest.hireDate());
         System.out.println("  - status: " + updateEmployeeRequest.status());

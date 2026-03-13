@@ -16,6 +16,6 @@ public record CreateEmployeeRequest(
 
         String employeeCode,
         String fullName,
-        String department,
+        Long departmentId,
         String position
 ) {}

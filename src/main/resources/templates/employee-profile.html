@@ -33,7 +33,7 @@
 <div class="profile-container">
     <div class="profile-header" th:style="'background: ' + ${avatarColor}">
         <div class="profile-avatar">
-            <span th:text="${#strings.substring(employee.fullName, 0, 1)}">J</span>
+            <span th:text="${employee.fullName != null && !employee.fullName.isEmpty() ? #strings.substring(employee.fullName, 0, 1) : '?'}">J</span>
         </div>
         <h1 th:text="${employee.fullName}">John Doe</h1>
         <p th:text="${employee.position}">Senior Developer</p>
@@ -46,7 +46,7 @@
         </div>
         <div class="info-group">
             <div class="info-label"><i class="fas fa-building"></i> Department</div>
-            <div class="info-value" th:text="${employee.department}">IT</div>
+            <div class="info-value" th:text="${employee.department != null ? employee.department.name : 'None'}">IT</div>
         </div>
         <div class="info-group">
             <div class="info-label"><i class="fas fa-calendar-alt"></i> Join Date</div>

@@ -13,8 +13,8 @@ public record UpdateEmployeeRequest(
         @NotBlank
         String fullName,
 
-        @NotBlank
-        String department,
+        @NotNull
+        Long departmentId,
 
         @NotBlank
         String position,

@@ -25,7 +25,12 @@ public class EmployeeSpecifications {
 
             // Department Filter
             if (dept != null && !dept.isEmpty()) {
-                predicates.add(cb.equal(root.get("department"), dept));
+                try {
+                    Long deptId = Long.parseLong(dept);
+                    predicates.add(cb.equal(root.get("department").get("id"), deptId));
+                } catch (NumberFormatException e) {
+                    // Ignore if not a valid ID
+                }
             }
 
             // Status Filter
